@@ -15,7 +15,17 @@
 
    Rẽ nhánh:
      anKhi:      { cau: "B6", la: ["0"] }          → ẩn câu này nếu B6 chọn "0"
-     chiHienKhi: { cau: "D1", la: ["Đã từng"] }    → chỉ hiện nếu D1 chọn "Đã từng"
+     chiHienKhi: { cau: "C1", la: ["Đã rõ một hướng"] } → chỉ hiện nếu C1 chọn "Đã rõ một hướng"
+
+     chiHienKhiDaTraLoi: "E1"                      → chỉ hiện nếu E1 có trả lời (không bỏ qua)
+
+   Lọc người trả lời:
+     chiTiepTucKhi: ["Năm 2"]   → chọn đáp án khác thì hiện màn loiDungSom, không ghi gì vào Sheet
+     batBuoc: true              → phải trả lời mới đi tiếp được
+
+   Câu có layLuaChonTu: "B4" chỉ hiện những lựa chọn đã tick ở B4.
+   Thêm boQuaKhiMotLuaChon: true thì nếu câu nguồn chỉ tick 1 lựa chọn, trang bỏ qua câu này
+   và tự ghi lựa chọn đó vào cột của câu.
 
    Câu gõ chữ có moiLuaChonMotO: "C9" sẽ hiện một ô cho mỗi lựa chọn đã tick ở C9.
    ===================================================================== */
@@ -32,7 +42,7 @@ window.SURVEY = {
   thoiGian: "7–10 phút",
 
   loiMoDau: {
-    chao: "Chào bạn! Khảo sát này tìm hiểu những khó khăn sinh viên gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ được dùng để xây dựng chuỗi nội dung chia sẻ từ các anh chị đang làm trong ngành, giúp các bạn khóa sau có thông tin thực tế hơn.",
+    chao: "Chào bạn! Khảo sát này dành cho sinh viên năm 2, tìm hiểu những khó khăn các bạn gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ được dùng để xây dựng chuỗi nội dung chia sẻ từ các anh chị đang làm trong ngành, giúp các bạn khóa sau có thông tin thực tế hơn.",
     gachDau: [
       "Thời gian: khoảng 7–10 phút.",
       "Khảo sát hoàn toàn ẩn danh. Email ở cuối là không bắt buộc.",
@@ -49,7 +59,13 @@ window.SURVEY = {
   cacGiaiDoan: { 1: "Hiểu ngành", 2: "Chọn hướng", 3: "Apply và đi làm" },
 
   loiCamOn: "Cảm ơn bạn đã dành thời gian!",
-  loiMoiChiaSe: "Mình đang làm một khảo sát ngắn (7–10 phút) về định hướng nghề nghiệp ngành BĐS. Bạn làm giúp mình nhé!",
+  loiMoiChiaSe: "Mình đang làm một khảo sát ngắn (7–10 phút) về định hướng nghề nghiệp ngành BĐS, dành cho sinh viên năm 2. Bạn làm giúp mình nhé!",
+
+  // Màn hiện ra khi người trả lời không thuộc nhóm khảo sát (xem chiTiepTucKhi ở câu A1)
+  loiDungSom: {
+    tieuDe: "Khảo sát này dành cho sinh viên năm 2",
+    noiDung: "Cảm ơn bạn đã quan tâm! Lần này nhóm chỉ tìm hiểu khó khăn của các bạn năm 2, nên bạn không cần làm tiếp. Nếu bạn chọn nhầm năm học, hãy bấm “Chọn lại”.",
+  },
 
   cacPhan: [
     {
@@ -59,8 +75,10 @@ window.SURVEY = {
       giaiDoan: 1, // nằm trong đoạn đầu của thanh tiến trình
       moTa: "Phần này dùng để chia kết quả theo năm học và hoàn cảnh, không dùng để nhận diện người trả lời.",
       cauHoi: [
+        // Chỉ sinh viên năm 2 được làm tiếp
         { ma: "A1", loai: "chon1", tieuDe: "Bạn đang là sinh viên năm mấy?",
-          luaChon: ["Năm 1", "Năm 2", "Năm 3", "Năm 4", "Đã tốt nghiệp (dưới 2 năm)"] },
+          luaChon: ["Năm 1", "Năm 2", "Năm 3", "Năm 4", "Đã tốt nghiệp (dưới 2 năm)"],
+          chiTiepTucKhi: ["Năm 2"], batBuoc: true },
         { ma: "A2", loai: "chon1", tieuDe: "Bạn học ngành/chương trình nào?",
           luaChon: ["Bất động sản – UEH", "Ngành khác – UEH (ghi rõ)", "Trường khác (ghi rõ)"] },
         { ma: "A3", loai: "chon1", tieuDe: "Chuyên ngành bạn đã chọn?",
@@ -71,6 +89,9 @@ window.SURVEY = {
           luaChon: ["TP.HCM", "Hà Nội hoặc đô thị lớn khác", "Về quê", "Chưa biết"] },
         { ma: "A6", loai: "chon1", tieuDe: "Bạn đã từng thực tập hoặc làm việc trong ngành BĐS chưa?",
           luaChon: ["Chưa", "Đang thực tập/làm việc", "Đã từng"] },
+        // Hỏi mở trước khi đưa danh sách khó khăn ở các phần sau, để câu trả lời không bị dẫn dắt
+        { ma: "A7", loai: "traLoiNgan",
+          tieuDe: "Lần gần nhất bạn thấy bí về chuyện chọn chuyên ngành, chọn nghề hay chọn hướng đi là khi nào? Điều gì làm bạn bí nhất?" },
       ],
     },
 
@@ -111,6 +132,7 @@ window.SURVEY = {
       dongVien: "Xong 1/3 hành trình rồi!",
       giaiDoan: 2,
       cauHoi: [
+        { ma: "C11", loai: "thang5", tieuDe: "“Tôi có thể kể ra 3 việc mình làm tốt và 1 kiểu công việc mình chắc chắn không muốn làm.”" },
         { ma: "C1", loai: "chon1", tieuDe: "Bạn đã có hướng nghề muốn theo chưa?",
           luaChon: ["Đã rõ một hướng", "Đang cân nhắc vài hướng", "Chưa có hướng nào"] },
         { ma: "C2", loai: "traLoiNgan", tieuDe: "Nếu đã có hướng, đó là vị trí nào?",
@@ -121,7 +143,16 @@ window.SURVEY = {
           anKhi: { cau: "C1", la: ["Chưa có hướng nào"] } },
         { ma: "C4", loai: "thang5", tieuDe: "“Tôi có thể kể ra ít nhất 3 việc cụ thể mà người làm vị trí tôi muốn theo phải làm hằng tuần.”",
           anKhi: { cau: "C1", la: ["Chưa có hướng nào"] } },
-        { ma: "C5", loai: "thang5", tieuDe: "“Tôi đã (hoặc sẽ) chọn chuyên ngành dựa trên hiểu biết đầy đủ về công việc sau này.”" },
+        // Chọn chuyên ngành: căn cứ (C15) và hiểu biết về chuyên ngành (C14). Thay cho C5 cũ.
+        { ma: "C15", loai: "chonNhieu", toiDa: 3, tieuDe: "Bạn đã (hoặc đang) dựa vào điều gì để chọn chuyên ngành?",
+          luaChon: ["Công việc mình muốn làm sau này", "Môn học hoặc điểm số", "Lời khuyên của giảng viên hoặc anh chị khóa trên",
+            "Theo bạn bè", "Theo gia đình", "Chuyên ngành nào dễ xin việc hơn", "Chưa biết dựa vào đâu", "Khác (ghi rõ)"],
+          luaChonDuyNhat: ["Chưa biết dựa vào đâu"],
+          anKhi: { cau: "A3", la: ["Không áp dụng"] } },
+        { ma: "C14", loai: "thang5", tieuDe: "“Tôi biết mỗi chuyên ngành có thể dẫn tới những vị trí công việc nào.”",
+          anKhi: { cau: "A3", la: ["Không áp dụng"] } },
+        { ma: "C13", loai: "thang5", tieuDe: "“Tôi có thể kể ra 2–3 kỹ năng hoặc kinh nghiệm cụ thể mà nhà tuyển dụng ngành BĐS cần ở người mới ra trường.”" },
+        { ma: "C12", loai: "thang5", tieuDe: "“Tôi lo rằng dù chọn hướng nào, khi đi làm thật mình cũng có thể thấy không hợp.”" },
         // "Chưa từng" không đi chung với các lựa chọn khác: chọn nó sẽ bỏ các lựa chọn còn lại
         { ma: "C6", loai: "chonNhieu", tieuDe: "Bạn đã từng thử công việc thật trong ngành dưới hình thức nào?",
           luaChon: ["Thực tập", "Làm thêm/cộng tác viên", "Dự án của CLB", "Cuộc thi mô phỏng (case)",
@@ -143,61 +174,33 @@ window.SURVEY = {
     },
 
     {
-      ma: "D",
-      ten: "Phần D – Giai đoạn 3: Apply và đi làm",
-      nhan: "Giai đoạn 3",
-      dongVien: "Đã đi được 2/3 chặng đường!",
-      giaiDoan: 3,
-      cauHoi: [
-        { ma: "D1", loai: "chon1", tieuDe: "Bạn đã từng apply thực tập hoặc việc làm trong ngành BĐS chưa?",
-          luaChon: ["Đã từng", "Chưa từng"] },
-        { ma: "D2", loai: "chon1", tieuDe: "Bạn đã apply khoảng bao nhiêu nơi?",
-          luaChon: ["1–5", "6–15", "16–30", "Trên 30"],
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-        { ma: "D3", loai: "chon1", tieuDe: "Bạn được mời phỏng vấn ở bao nhiêu nơi?",
-          luaChon: ["0", "1–2", "3–5", "Trên 5"],
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-        { ma: "D4", loai: "chon1", tieuDe: "Bạn nhận được bao nhiêu offer?",
-          luaChon: ["0", "1", "2 trở lên"],
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-        { ma: "D5", loai: "thang5", tieuDe: "“Trước khi apply, tôi hiểu rõ nhà tuyển dụng đánh giá ứng viên dựa trên những gì.”",
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-        { ma: "D6", loai: "thang5", tieuDe: "“Mức độ cạnh tranh khi apply cao hơn nhiều so với tôi hình dung.”",
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-        { ma: "D7", loai: "chon1", tieuDe: "Nếu đã thực tập/làm việc, công việc thật so với hình dung ban đầu thế nào?",
-          luaChon: ["Gần giống", "Khác một chút", "Khác nhiều", "Chưa từng đi làm"],
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-        { ma: "D8", loai: "traLoiNgan", tieuDe: "Công việc thật khác hình dung của bạn ở điểm nào?",
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] },
-          anKhi: { cau: "D7", la: ["Gần giống", "Chưa từng đi làm"] } },
-        { ma: "D9", loai: "chon1", tieuDe: "Sau trải nghiệm apply/đi làm, bạn đang ở trạng thái nào?",
-          luaChon: ["Tiếp tục hướng cũ", "Chuyển sang hướng khác trong ngành BĐS", "Cân nhắc rời ngành", "Chưa biết đi tiếp thế nào"],
-          chiHienKhi: { cau: "D1", la: ["Đã từng"] } },
-      ],
-    },
-
-    {
       ma: "E",
       ten: "Phần E – Ưu tiên và nhu cầu hỗ trợ",
       nhan: "Chặng cuối",
       dongVien: "Sắp tới đích rồi, chỉ còn vài câu nữa thôi!",
       giaiDoan: 3, // nằm chung đoạn cuối của thanh tiến trình
       cauHoi: [
-        { ma: "E1", loai: "chonNhieu", toiDa: 3, tieuDe: "Trong các khó khăn dưới đây, khó khăn nào bạn thấy nặng nhất với mình?",
+        // Mỗi lựa chọn chỉ nói một khó khăn. Ghi chú cuối dòng là giả thuyết mà lựa chọn đó kiểm tra.
+        { ma: "E1", loai: "chonNhieu", toiDa: 3,
+          tieuDe: "Những khó khăn nào đang ảnh hưởng nhiều nhất đến việc chọn chuyên ngành và hướng nghề của bạn?",
           luaChon: [
-            "Không biết ngành có những nghề gì ngoài sale",
-            "Thông tin rời rạc, chủ yếu nghe nói",
-            "Mông lung, lo mình chậm hơn bạn bè",
-            "Chọn hướng dựa trên hình dung, không chắc đúng",
-            "Chọn chuyên ngành khi chưa đủ căn cứ",
-            "Chưa được thử việc thật nên chưa biết mình hợp gì",
-            "Không có người đi trước dẫn dắt",
-            "Cạnh tranh khi apply, không biết nhà tuyển dụng cần gì",
-            "Vỡ mộng vì công việc thật khác hình dung",
-            "Chới với, mất phương hướng sau khi trượt hoặc vỡ mộng",
+            "Chưa biết mình thích gì, giỏi gì",                              // H2
+            "Không biết các nghề trong ngành (ngoài môi giới) thực tế làm gì", // H3
+            "Thông tin về nghề rời rạc, chủ yếu nghe kể lại",                 // H3
+            "Phải chọn chuyên ngành khi chưa đủ thông tin",                   // H1
+            "Không biết cần chuẩn bị gì để được nhận (kỹ năng, kinh nghiệm, CV)", // H4
+            "Sợ chọn xong, đi làm mới thấy không hợp",                        // H5
+            "Chưa có cơ hội thử việc thật (thực tập, dự án)",
+            "Không có ai đi trước để hỏi",
+            "Áp lực hoặc kỳ vọng từ gia đình",
             "Ít cơ hội việc làm nếu muốn về quê",
             "Khác (ghi rõ)",
           ] },
+        // Chỉ chọn 1 ở E1 thì trang bỏ qua E5 và tự ghi lựa chọn đó vào cột E5
+        { ma: "E5", loai: "chon1", tieuDe: "Trong những khó khăn bạn vừa chọn, khó khăn nào lớn nhất?",
+          layLuaChonTu: "E1", boQuaKhiMotLuaChon: true, chiHienKhiDaTraLoi: "E1" },
+        { ma: "E6", loai: "traLoiNgan", tieuDe: "Vì sao đó là khó khăn lớn nhất với bạn?",
+          chiHienKhiDaTraLoi: "E1" },
         { ma: "E2", loai: "chonNhieu", toiDa: 3, tieuDe: "Hình thức hỗ trợ nào bạn muốn có nhất?",
           luaChon: [
             "Bài mô tả công việc thật của từng vị trí, do người đang làm kể",
@@ -254,7 +257,7 @@ window.SURVEY = {
   /* Quy tắc xếp giai đoạn. "tl" là câu trả lời, ví dụ tl.D1 là đáp án câu D1.
      Câu bị ẩn hoặc bị bỏ qua sẽ không có giá trị. */
   tinhGiaiDoan: function (tl) {
-    if (tl.D1 === "Đã từng" || tl.A6 === "Đang thực tập/làm việc" || tl.A6 === "Đã từng") return 3;
+    if (tl.A6 === "Đang thực tập/làm việc" || tl.A6 === "Đã từng") return 3;
     if (tl.C1 === "Đã rõ một hướng" || tl.C1 === "Đang cân nhắc vài hướng" || tl.B3 >= 3) return 2;
     return 1;
   },

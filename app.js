@@ -82,7 +82,16 @@
   function questionVisible(q) {
     if (q.chiHienKhi && !matches(q.chiHienKhi)) return false;
     if (q.anKhi && matches(q.anKhi)) return false;
+    if (q.chiHienKhiDaTraLoi && !hasValue(answerOf(q.chiHienKhiDaTraLoi))) return false;
+    if (singlePick(q) !== undefined) return false;
     return true;
+  }
+
+  // Câu nguồn chỉ tick 1 lựa chọn thì câu boQuaKhiMotLuaChon không cần hỏi: trả về lựa chọn đó.
+  function singlePick(q) {
+    if (!q.boQuaKhiMotLuaChon) return undefined;
+    const picked = answerOf(q.layLuaChonTu);
+    return Array.isArray(picked) && picked.length === 1 ? picked[0] : undefined;
   }
 
   function stepVisible(step) {
@@ -170,15 +179,17 @@
 
   // Nút "quay lại" của điện thoại cũng lùi một câu thay vì rời trang.
   window.addEventListener("popstate", () => {
+    if (view === "stop") { showStep("back"); history.pushState({ ks: 1 }, ""); return; }
     if (view !== "step") return;
     goBack();
     if (view === "step") history.pushState({ ks: 1 }, "");
   });
 
-  function setNav({ back, label, ghost, action }) {
+  function setNav({ back, label, ghost, action, disabled }) {
     btnBack.hidden = !back;
     btnNext.textContent = label;
     btnNext.className = "btn " + (ghost ? "btn-ghost" : "btn-primary");
+    btnNext.disabled = !!disabled;
     onNext = action;
   }
 
@@ -195,6 +206,12 @@
   }
 
   function goNext() {
+    // Câu có chiTiepTucKhi (ví dụ A1 chỉ nhận "Năm 2"): đáp án khác thì dừng ở đây.
+    const cur = steps[state.pos];
+    if (cur && cur.q && cur.q.chiTiepTucKhi) {
+      const v = currentValue(cur.q);
+      if (hasValue(v) && !cur.q.chiTiepTucKhi.includes(v)) return showStop();
+    }
     const next = nextVisible(state.pos);
     if (next === -1) return;
     state.history.push(state.pos);
@@ -340,6 +357,17 @@
     else showQuestion(step.q, dir);
   }
 
+  function showStop() {
+    view = "stop";
+    const L = S.loiDungSom;
+    const screen = el("section", { class: "intro" },
+      illustration("intro"),
+      el("h1", { class: "title title-xl", tabindex: "-1", "data-focus": true }, L.tieuDe),
+      el("p", { class: "lead" }, L.noiDung));
+    mount(screen, "forward");
+    setNav({ back: false, label: "Chọn lại", ghost: true, action: () => showStep("back") });
+  }
+
   function showChapter(phan, dir) {
     const screen = el("section", { class: "chapter" },
       illustration(phan.ma),
@@ -367,6 +395,7 @@
       const answered = labels.length
         ? labels.some((l) => hasValue(perOptionStore(q)[l]))
         : hasValue(currentValue(q));
+      if (q.batBuoc && !answered) return setNav({ back: true, label: "Chọn một đáp án", ghost: true, disabled: true });
       setNav({ back: true, label: answered ? "Tiếp" : "Bỏ qua", ghost: !answered, action: goNext });
     };
 
@@ -578,13 +607,18 @@
         });
         return;
       }
+      // Câu bị bỏ qua vì câu nguồn chỉ có 1 lựa chọn vẫn ghi lựa chọn đó (ví dụ E5 lấy từ E1).
+      const auto = visible ? undefined : singlePick(q);
+      const shown = visible || auto !== undefined;
+      const value = auto !== undefined ? auto : v;
       columns.push(q.ma);
-      values.push(!visible ? HIDDEN : formatValue(q, v));
+      values.push(!shown ? HIDDEN : formatValue(q, value));
       if (hasOtherOption(q)) {
-        const picked = [].concat(v || []);
-        const otherText = picked.some((x) => OTHER_RE.test(x)) ? (state.answers[q.ma + "__ghiRo"] || "").trim() : "";
+        const picked = [].concat(value || []);
+        const otherKey = (auto !== undefined ? q.layLuaChonTu : q.ma) + "__ghiRo";
+        const otherText = picked.some((x) => OTHER_RE.test(x)) ? (state.answers[otherKey] || "").trim() : "";
         columns.push(q.ma + " – ghi rõ");
-        values.push(!visible ? HIDDEN : otherText);
+        values.push(!shown ? HIDDEN : otherText);
       }
     });
     return { columns, values };
