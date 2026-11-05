@@ -15,6 +15,7 @@
 
    Rẽ nhánh:
      anKhi:      { cau: "B6", la: ["0"] }          → ẩn câu này nếu B6 chọn "0"
+                 (với câu chọn nhiều: ẩn nếu có tick một trong các lựa chọn trong la)
      chiHienKhi: { cau: "C1", la: ["Đã rõ một hướng"] } → chỉ hiện nếu C1 chọn "Đã rõ một hướng"
 
      chiHienKhiDaTraLoi: "E1"                      → chỉ hiện nếu E1 có trả lời (không bỏ qua)
@@ -22,6 +23,9 @@
    Lọc người trả lời:
      chiTiepTucKhi: ["Năm 2"]   → chọn đáp án khác thì hiện màn loiDungSom, không ghi gì vào Sheet
      batBuoc: true              → phải trả lời mới đi tiếp được
+
+   Câu chọn nhiều có tronThuTu: true sẽ hiện lựa chọn theo thứ tự ngẫu nhiên cho mỗi người
+   ("Khác (ghi rõ)" và các lựa chọn trong luaChonDuyNhat luôn nằm cuối).
 
    Câu có layLuaChonTu: "B4" chỉ hiện những lựa chọn đã tick ở B4.
    Thêm boQuaKhiMotLuaChon: true thì nếu câu nguồn chỉ tick 1 lựa chọn, trang bỏ qua câu này
@@ -42,7 +46,7 @@ window.SURVEY = {
   thoiGian: "7–10 phút",
 
   loiMoDau: {
-    chao: "Chào bạn! Khảo sát này dành cho sinh viên năm 2 ngành Bất động sản UEH, tìm hiểu những khó khăn các bạn gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ được dùng để xây dựng chuỗi nội dung chia sẻ từ các anh chị đang làm trong ngành, giúp các bạn khóa sau có thông tin thực tế hơn.",
+    chao: "Chào bạn! Khảo sát này dành cho sinh viên năm 2 ngành Bất động sản UEH, tìm hiểu những khó khăn các bạn gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ giúp REC hiểu rõ các bạn đang gặp khó khăn gì, để thiết kế những hoạt động hỗ trợ định hướng nghề phù hợp hơn.",
     gachDau: [
       "Thời gian: khoảng 7–10 phút.",
       "Khảo sát hoàn toàn ẩn danh. Email ở cuối là không bắt buộc.",
@@ -160,16 +164,6 @@ window.SURVEY = {
           luaChonDuyNhat: ["Chưa từng"] },
         { ma: "C7", loai: "chon1", tieuDe: "Khi cần hỏi về nghề, bạn có người đi trước trong ngành để hỏi không?",
           luaChon: ["Có, và hỏi thường xuyên", "Có, nhưng ngại hỏi", "Không có ai"] },
-        { ma: "C9", loai: "chonNhieu", toiDa: 3, tieuDe: "Bạn muốn tìm hiểu kỹ hơn về những vị trí nào?",
-          luaChon: DS_VI_TRI },
-        { ma: "C10", loai: "chonNhieu", toiDa: 3, tieuDe: "Với vị trí đó, bạn muốn biết điều gì nhất?",
-          luaChon: ["Công việc cụ thể hằng ngày", "Kỹ năng và kiến thức cần có", "Cách bắt đầu vào nghề (thực tập, vị trí đầu tiên)",
-            "Lộ trình thăng tiến 3–5 năm", "Thu nhập và cách tính thu nhập", "Áp lực, mặt khó của công việc",
-            "Cân bằng công việc và cuộc sống", "Ai hợp và ai không hợp với nghề này"] },
-        // Mỗi vị trí chọn ở C9 có một ô riêng. Nếu bỏ qua C9 thì hiện một ô chung với tieuDeKhiKhongChon.
-        { ma: "C8", loai: "traLoiNgan", moiLuaChonMotO: "C9",
-          tieuDe: "Nếu được gặp một anh/chị đang làm vị trí bạn đã chọn, bạn muốn hỏi câu gì?",
-          tieuDeKhiKhongChon: "Nếu có một anh/chị đi trước để hỏi, điều đầu tiên bạn muốn hỏi là gì?" },
       ],
     },
 
@@ -177,17 +171,18 @@ window.SURVEY = {
       ma: "E",
       ten: "Phần E – Ưu tiên và nhu cầu hỗ trợ",
       nhan: "Chặng cuối",
-      dongVien: "Sắp tới đích rồi, chỉ còn vài câu nữa thôi!",
+      dongVien: "Sắp tới đích rồi, cố thêm chút nữa nhé!",
       giaiDoan: 3, // nằm chung đoạn cuối của thanh tiến trình
       cauHoi: [
         // Mỗi lựa chọn chỉ nói một khó khăn. Ghi chú cuối dòng là giả thuyết mà lựa chọn đó kiểm tra.
-        { ma: "E1", loai: "chonNhieu", toiDa: 3,
+        // tronThuTu: mỗi người thấy các khó khăn theo thứ tự riêng, để ô đầu danh sách không được chọn nhiều hơn chỉ vì nằm đầu.
+        { ma: "E1", loai: "chonNhieu", toiDa: 3, tronThuTu: true,
           tieuDe: "Những khó khăn nào đang ảnh hưởng nhiều nhất đến việc chọn chuyên ngành và hướng nghề của bạn?",
           luaChon: [
             "Chưa biết mình thích gì, giỏi gì",                              // H2
             "Không biết các nghề trong ngành (ngoài môi giới) thực tế làm gì", // H3
             "Thông tin về nghề rời rạc, chủ yếu nghe kể lại",                 // H3
-            "Phải chọn chuyên ngành khi chưa đủ thông tin",                   // H1
+            "Chưa rõ mỗi chuyên ngành sẽ dẫn tới những nghề nào",                   // H1
             "Không biết cần chuẩn bị gì để được nhận (kỹ năng, kinh nghiệm, CV)", // H4
             "Sợ chọn xong, đi làm mới thấy không hợp",                        // H5
             "Chưa có cơ hội thử việc thật (thực tập, dự án)",
@@ -195,12 +190,38 @@ window.SURVEY = {
             "Áp lực hoặc kỳ vọng từ gia đình",
             "Ít cơ hội việc làm nếu muốn về quê",
             "Khác (ghi rõ)",
-          ] },
+            "Hiện mình không thấy khó khăn đáng kể",
+          ],
+          luaChonDuyNhat: ["Hiện mình không thấy khó khăn đáng kể"] },
         // Chỉ chọn 1 ở E1 thì trang bỏ qua E5 và tự ghi lựa chọn đó vào cột E5
         { ma: "E5", loai: "chon1", tieuDe: "Trong những khó khăn bạn vừa chọn, khó khăn nào lớn nhất?",
-          layLuaChonTu: "E1", boQuaKhiMotLuaChon: true, chiHienKhiDaTraLoi: "E1" },
+          layLuaChonTu: "E1", boQuaKhiMotLuaChon: true, chiHienKhiDaTraLoi: "E1",
+          anKhi: { cau: "E1", la: ["Hiện mình không thấy khó khăn đáng kể"] } },
         { ma: "E6", loai: "traLoiNgan", tieuDe: "Vì sao đó là khó khăn lớn nhất với bạn?",
-          chiHienKhiDaTraLoi: "E1" },
+          chiHienKhiDaTraLoi: "E1",
+          anKhi: { cau: "E1", la: ["Hiện mình không thấy khó khăn đáng kể"] } },
+        // Các câu về anh chị đi trước đặt SAU câu khó khăn (E1, E5, E6),
+        // để người trả lời không bị gợi ý chọn những khó khăn mà anh chị giải quyết được.
+        { ma: "C9", loai: "chonNhieu", toiDa: 3, tieuDe: "Bạn muốn tìm hiểu kỹ hơn về những vị trí nào?",
+          luaChon: DS_VI_TRI },
+        { ma: "C10", loai: "chonNhieu", toiDa: 3, tieuDe: "Với vị trí đó, bạn muốn biết điều gì nhất?",
+          luaChon: ["Công việc cụ thể hằng ngày", "Kỹ năng và kiến thức cần có", "Cách bắt đầu vào nghề (thực tập, vị trí đầu tiên)",
+            "Lộ trình thăng tiến 3–5 năm", "Thu nhập và cách tính thu nhập", "Áp lực, mặt khó của công việc",
+            "Cân bằng công việc và cuộc sống", "Ai hợp và ai không hợp với nghề này"] },
+        // Muốn nghe về giai đoạn nào trong hành trình của cựu sinh viên (C16), và điều gì về thời đi học của họ (C17)
+        { ma: "C16", loai: "chon1",
+          tieuDe: "Nếu được nghe một anh/chị cựu sinh viên kể về hành trình của họ, bạn muốn nghe về giai đoạn nào nhất?",
+          luaChon: ["Hồi còn đi học: chọn chuyên ngành, chọn hướng, thử việc", "Lúc mới ra trường: tìm công việc đầu tiên",
+            "Công việc hiện tại của họ", "Mình không có nhu cầu nghe chia sẻ"] },
+        { ma: "C17", loai: "chonNhieu", toiDa: 2, tieuDe: "Về thời còn đi học của anh/chị, bạn muốn nghe điều gì nhất?",
+          luaChon: ["Họ đã chọn chuyên ngành dựa vào đâu", "Họ đã thử những gì (CLB, cuộc thi, thực tập)",
+            "Lúc họ mông lung và cách họ vượt qua", "Họ nhận ra mình hợp với nghề vào lúc nào",
+            "Điều họ ước đã làm khác hồi đi học", "Khác (ghi rõ)"],
+          anKhi: { cau: "C16", la: ["Mình không có nhu cầu nghe chia sẻ"] } },
+        // Mỗi vị trí chọn ở C9 có một ô riêng. Nếu bỏ qua C9 thì hiện một ô chung với tieuDeKhiKhongChon.
+        { ma: "C8", loai: "traLoiNgan", moiLuaChonMotO: "C9",
+          tieuDe: "Nếu được gặp một anh/chị đang làm vị trí bạn đã chọn, bạn muốn hỏi câu gì?",
+          tieuDeKhiKhongChon: "Nếu có một anh/chị đi trước để hỏi, điều đầu tiên bạn muốn hỏi là gì?" },
         { ma: "E3", loai: "traLoiNgan", tieuDe: "Điều bạn ước được biết sớm hơn về ngành này là gì?" },
         // Email được gửi sang sheet riêng, không nằm chung dòng với câu trả lời
         { ma: "E4", loai: "email", tieuDe: "Nếu muốn nhận nội dung chia sẻ hoặc tham gia các buổi trò chuyện, hãy để lại email.",

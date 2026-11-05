@@ -31,10 +31,11 @@ Mỗi câu hỏi trong `questions.js` trông như sau:
 - **Giới hạn số lựa chọn:** thêm `toiDa: 3` vào câu loại `"chonNhieu"`.
 - **Loại câu:** `"chon1"` (chọn 1), `"chonNhieu"` (chọn nhiều), `"thang5"` (thang 1–5), `"traLoiNgan"` (ô gõ chữ), `"email"`.
 - **Rẽ nhánh:**
-  - `anKhi: { cau: "B6", la: ["0"] }`: ẩn câu này nếu câu B6 chọn "0".
+  - `anKhi: { cau: "B6", la: ["0"] }`: ẩn câu này nếu câu B6 chọn "0". Với câu chọn nhiều, câu bị ẩn nếu có tick một trong các lựa chọn trong `la` (ví dụ E5, E6 ẩn khi E1 chọn "Hiện mình không thấy khó khăn đáng kể").
   - `chiHienKhi: { cau: "C1", la: ["Đã rõ một hướng"] }`: chỉ hiện câu này nếu C1 chọn "Đã rõ một hướng".
   - `chiHienKhiDaTraLoi: "E1"`: chỉ hiện câu này nếu người trả lời không bỏ qua E1.
   - Chữ trong `la: [...]` phải **giống hệt** chữ của lựa chọn. Nếu bạn sửa chữ của một lựa chọn, hãy sửa cả chỗ này.
+- **Xáo thứ tự lựa chọn:** E1 có `tronThuTu: true`, nên mỗi người thấy các khó khăn theo một thứ tự riêng. Lựa chọn "Khác (ghi rõ)" và lựa chọn trong `luaChonDuyNhat` luôn nằm cuối. Trong Sheet, các lựa chọn vẫn ghi theo thứ tự gốc trong file.
 - **Danh sách vị trí** dùng chung cho B2 và C9 nằm ở đầu file, tên là `DS_VI_TRI`. Sửa ở đó là đổi cả hai câu.
 - **Chỉ dành cho sinh viên năm 2 ngành BĐS UEH:** câu A1 có `chiTiepTucKhi: ["Năm 2"]`, câu A2 có `chiTiepTucKhi: ["Bất động sản – UEH"]`, cả hai đều có `batBuoc: true`. Người chọn năm khác hoặc ngành khác sẽ thấy lời cảm ơn (phần `loiDungSom` trong `questions.js`) và dừng lại, không có dòng nào được ghi vào Sheet. Muốn mở rộng, xóa hai trường này ở câu tương ứng và sửa lại `loiDungSom`.
 - **Lấy lựa chọn từ câu trước:** B5 có `layLuaChonTu: "B4"`, nên chỉ hiện các nguồn đã chọn ở B4. E5 cũng lấy từ E1 và có thêm `boQuaKhiMotLuaChon: true`: nếu E1 chỉ chọn 1 khó khăn, trang bỏ qua E5 và tự ghi khó khăn đó vào cột E5.
@@ -64,11 +65,13 @@ Mỗi giả thuyết về khó khăn được đo bằng một câu chấm đi�
 
 | Giả thuyết | Câu chấm điểm 1–5 | Lựa chọn ở E1 |
 |---|---|---|
-| H1 Không biết chọn hướng, chọn chuyên ngành | C14 (điểm thấp là khó) | Phải chọn chuyên ngành khi chưa đủ thông tin |
+| H1 Không biết chọn hướng, chọn chuyên ngành | C14 (điểm thấp là khó) | Chưa rõ mỗi chuyên ngành sẽ dẫn tới những nghề nào |
 | H2 Không biết cách khám phá bản thân | C11 (điểm thấp là khó) | Chưa biết mình thích gì, giỏi gì |
 | H3 Không biết nghề thực tế làm gì | B3 (điểm thấp là khó) | Không biết các nghề… thực tế làm gì; Thông tin về nghề rời rạc |
 | H4 Không biết cần chuẩn bị gì | C13 (điểm thấp là khó) | Không biết cần chuẩn bị gì để được nhận |
 | H5 Lo chọn xong chưa chắc đúng | C12 (điểm **cao** là khó) | Sợ chọn xong, đi làm mới thấy không hợp |
+
+Lựa chọn "Chưa rõ mỗi chuyên ngành sẽ dẫn tới những nghề nào" trước ngày 5/11/2026 ghi là "Phải chọn chuyên ngành khi chưa đủ thông tin". Nếu cột E1 có cả hai chữ, hãy đếm chung là một lựa chọn.
 
 Mức mông lung chung nằm ở B9. Câu C15 cho biết các bạn dựa vào đâu để chọn chuyên ngành: nhiều bạn chọn "Chưa biết dựa vào đâu", "Theo bạn bè" hay "Môn học hoặc điểm số" mà ít bạn chọn "Công việc mình muốn làm sau này" là dấu hiệu chuyên ngành đang được chọn khi chưa nghĩ tới nghề.
 
@@ -77,11 +80,28 @@ Cột C5 cũ (nếu có) không còn được hỏi. C14 đã thay cho C5 với 
 Cách đọc:
 
 1. **Đọc cột A7 trước khi xem con số.** A7 hỏi mở trước khi người trả lời thấy bất kỳ danh sách nào. Gắn cho mỗi câu trả lời một nhãn H1–H5, hoặc "mới" nếu không khớp giả thuyết nào. Nhãn "mới" xuất hiện nhiều là dấu hiệu danh sách còn thiếu.
-2. **Phổ biến:** đếm xem bao nhiêu người tick mỗi lựa chọn ở cột E1.
-3. **Lớn nhất:** đếm cột E5. Cột này luôn có khó khăn lớn nhất của người đã trả lời E1.
-4. **Gốc hay hệ quả:** đọc cột E6 (vì sao đó là khó khăn lớn nhất). Ví dụ nhiều bạn chọn "Phải chọn chuyên ngành…" nhưng E6 lại viết "vì chưa biết mình hợp gì", thì gốc có thể là H2, còn H1 là hệ quả.
-5. **Liên quan đến mông lung:** so điểm B9 trung bình giữa nhóm chấm 1–2 và nhóm chấm 4–5 ở từng câu C11, B3, C13, C14 (với C12 thì ngược lại). Câu nào có chênh lệch B9 lớn nhất là ứng viên cho khó khăn chính.
-6. **Tách nhóm:** so các bạn đã chọn chuyên ngành với các bạn chưa chọn (A3), hoặc đã thực tập với chưa thực tập (A6).
+2. **Có gặp khó khăn không:** đếm số bạn chọn "Hiện mình không thấy khó khăn đáng kể" ở E1. Khi tính phần trăm cho từng khó khăn, ghi rõ là trên tổng số người trả lời hay chỉ trên những bạn có gặp khó khăn.
+3. **Phổ biến:** đếm xem bao nhiêu người tick mỗi lựa chọn ở cột E1.
+4. **Lớn nhất:** đếm cột E5. Cột này luôn có khó khăn lớn nhất của người đã trả lời E1.
+5. **Gốc hay hệ quả:** đọc cột E6 (vì sao đó là khó khăn lớn nhất). Ví dụ nhiều bạn chọn "Chưa rõ mỗi chuyên ngành…" nhưng E6 lại viết "vì chưa biết mình hợp gì", thì gốc có thể là H2, còn H1 là hệ quả.
+6. **Liên quan đến mông lung:** so điểm B9 trung bình giữa nhóm chấm 1–2 và nhóm chấm 4–5 ở từng câu C11, B3, C13, C14 (với C12 thì ngược lại). Câu nào có chênh lệch B9 lớn nhất là ứng viên cho khó khăn chính.
+7. **Tách nhóm:** so các bạn đã chọn chuyên ngành với các bạn chưa chọn (A3), hoặc đã thực tập với chưa thực tập (A6).
+
+### Muốn nghe gì từ cựu sinh viên
+
+- **C16:** đếm xem các bạn muốn nghe về giai đoạn nào nhất trong hành trình của cựu sinh viên. Số bạn chọn "Mình không có nhu cầu nghe chia sẻ" cho biết có bao nhiêu bạn không quan tâm.
+- **C17:** với các bạn muốn nghe, điều gì về thời đi học của anh/chị được chọn nhiều nhất. Đây là gợi ý chủ đề chính cho buổi phỏng vấn 20 phút.
+- **Ghép với E5:** lọc theo từng khó khăn lớn nhất ở E5, rồi xem nhóm đó chọn gì ở C17. Ví dụ, những bạn chọn "Chưa rõ mỗi chuyên ngành sẽ dẫn tới những nghề nào" có muốn nghe "Họ đã chọn chuyên ngành dựa vào đâu" không.
+- **Đối chiếu với B5:** C16 và C17 là điều các bạn *muốn*. B5 (nguồn giúp hiểu công việc thật nhất) là điều đã *thật sự giúp*. Nếu nhiều bạn chọn "Anh chị khóa trên" hay "Người đang đi làm trong ngành" ở B5, việc nghe người đi trước kể có cơ sở để tin là hữu ích.
+
+### Lưu ý về thiên lệch khi đọc kết quả
+
+Khảo sát đã giảm một số thiên lệch: câu hỏi mở A7 đứng trước mọi danh sách, câu khó khăn (E1, E5, E6) đứng trước các câu về anh chị đi trước, E1 có lựa chọn "không thấy khó khăn" và xáo thứ tự lựa chọn. Vẫn còn vài điều cần nhớ:
+
+- **Ai trả lời:** các bạn chịu làm khảo sát thường là những bạn đang quan tâm hoặc đang lo về nghề nghiệp. Hãy ghi lại link đã gửi qua những kênh nào và ước lượng tỉ lệ trả lời (ví dụ 40 trên 200 bạn năm 2).
+- **Chuyện khó nói:** con số ở các lựa chọn "Theo gia đình", "Theo bạn bè", "Áp lực hoặc kỳ vọng từ gia đình" có thể thấp hơn thực tế.
+- **Các câu ở Phần B và C** (biết những vị trí nào, có người để hỏi không…) vẫn có thể khiến người trả lời nghĩ nhiều hơn tới khó khăn về thông tin. A7 là câu ít bị ảnh hưởng nhất.
+- **Khi gắn nhãn A7 và E6:** mạnh dạn dùng nhãn "mới", và nếu được, nhờ một bạn khác gắn nhãn riêng rồi so với mình.
 
 Với dưới khoảng 30 người trả lời, chênh lệch nhỏ giữa các nhóm chưa nói lên được gì. Hãy xem kết quả như dấu hiệu để hỏi tiếp, chưa phải kết luận.
 

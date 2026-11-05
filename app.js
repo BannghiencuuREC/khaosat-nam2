@@ -76,15 +76,20 @@
   }
 
   function matches(rule) {
-    return rule.la.includes(answerOf(rule.cau));
+    const v = answerOf(rule.cau);
+    return Array.isArray(v) ? v.some((x) => rule.la.includes(x)) : rule.la.includes(v);
   }
 
-  function questionVisible(q) {
+  // Ẩn theo các luật rẽ nhánh, chưa tính trường hợp bỏ qua vì câu nguồn chỉ có 1 lựa chọn.
+  function ruleVisible(q) {
     if (q.chiHienKhi && !matches(q.chiHienKhi)) return false;
     if (q.anKhi && matches(q.anKhi)) return false;
     if (q.chiHienKhiDaTraLoi && !hasValue(answerOf(q.chiHienKhiDaTraLoi))) return false;
-    if (singlePick(q) !== undefined) return false;
     return true;
+  }
+
+  function questionVisible(q) {
+    return ruleVisible(q) && singlePick(q) === undefined;
   }
 
   // Câu nguồn chỉ tick 1 lựa chọn thì câu boQuaKhiMotLuaChon không cần hỏi: trả về lựa chọn đó.
@@ -114,9 +119,29 @@
     return q.layLuaChonTu ? qById[q.layLuaChonTu].luaChon : q.luaChon || [];
   }
 
+  // Câu có tronThuTu: mỗi người một thứ tự, giữ nguyên khi quay lại câu đó.
+  // "Khác (ghi rõ)" và lựa chọn duy nhất (ví dụ "không thấy khó khăn") luôn nằm cuối.
+  function ordered(q, list) {
+    if (!q.tronThuTu) return list;
+    const fixed = list.filter((o) => OTHER_RE.test(o) || (q.luaChonDuyNhat || []).includes(o));
+    const free = list.filter((o) => !fixed.includes(o));
+    state.thuTu = state.thuTu || {};
+    let order = state.thuTu[q.ma];
+    if (!order || order.length !== free.length || !free.every((o) => order.includes(o))) {
+      order = free.slice();
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      state.thuTu[q.ma] = order;
+      save();
+    }
+    return order.concat(fixed);
+  }
+
   function optionsFor(q) {
     if (q.loai === "thang5") return S.thangDiem.map((text, i) => ({ value: i + 1, text, num: i + 1 }));
-    let list = sourceOptions(q);
+    let list = ordered(q.layLuaChonTu ? qById[q.layLuaChonTu] : q, sourceOptions(q));
     if (q.layLuaChonTu) {
       const picked = answerOf(q.layLuaChonTu);
       if (Array.isArray(picked) && picked.length) list = list.filter((o) => picked.includes(o));
@@ -608,7 +633,7 @@
         return;
       }
       // Câu bị bỏ qua vì câu nguồn chỉ có 1 lựa chọn vẫn ghi lựa chọn đó (ví dụ E5 lấy từ E1).
-      const auto = visible ? undefined : singlePick(q);
+      const auto = !visible && ruleVisible(q) ? singlePick(q) : undefined;
       const shown = visible || auto !== undefined;
       const value = auto !== undefined ? auto : v;
       columns.push(q.ma);
