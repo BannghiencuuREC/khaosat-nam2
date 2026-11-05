@@ -42,7 +42,7 @@ window.SURVEY = {
   thoiGian: "7–10 phút",
 
   loiMoDau: {
-    chao: "Chào bạn! Khảo sát này dành cho sinh viên năm 2, tìm hiểu những khó khăn các bạn gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ được dùng để xây dựng chuỗi nội dung chia sẻ từ các anh chị đang làm trong ngành, giúp các bạn khóa sau có thông tin thực tế hơn.",
+    chao: "Chào bạn! Khảo sát này dành cho sinh viên năm 2 ngành Bất động sản UEH, tìm hiểu những khó khăn các bạn gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ được dùng để xây dựng chuỗi nội dung chia sẻ từ các anh chị đang làm trong ngành, giúp các bạn khóa sau có thông tin thực tế hơn.",
     gachDau: [
       "Thời gian: khoảng 7–10 phút.",
       "Khảo sát hoàn toàn ẩn danh. Email ở cuối là không bắt buộc.",
@@ -59,12 +59,12 @@ window.SURVEY = {
   cacGiaiDoan: { 1: "Hiểu ngành", 2: "Chọn hướng", 3: "Apply và đi làm" },
 
   loiCamOn: "Cảm ơn bạn đã dành thời gian!",
-  loiMoiChiaSe: "Mình đang làm một khảo sát ngắn (7–10 phút) về định hướng nghề nghiệp ngành BĐS, dành cho sinh viên năm 2. Bạn làm giúp mình nhé!",
+  loiMoiChiaSe: "Mình đang làm một khảo sát ngắn (7–10 phút) về định hướng nghề nghiệp, dành cho sinh viên năm 2 ngành BĐS UEH. Bạn làm giúp mình nhé!",
 
-  // Màn hiện ra khi người trả lời không thuộc nhóm khảo sát (xem chiTiepTucKhi ở câu A1)
+  // Màn hiện ra khi người trả lời không thuộc nhóm khảo sát (xem chiTiepTucKhi ở câu A1 và A2)
   loiDungSom: {
-    tieuDe: "Khảo sát này dành cho sinh viên năm 2",
-    noiDung: "Cảm ơn bạn đã quan tâm! Lần này nhóm chỉ tìm hiểu khó khăn của các bạn năm 2, nên bạn không cần làm tiếp. Nếu bạn chọn nhầm năm học, hãy bấm “Chọn lại”.",
+    tieuDe: "Khảo sát này dành cho sinh viên năm 2 ngành BĐS UEH",
+    noiDung: "Cảm ơn bạn đã quan tâm! Lần này nhóm chỉ tìm hiểu khó khăn của các bạn năm 2 ngành Bất động sản tại UEH, nên bạn không cần làm tiếp. Nếu bạn chọn nhầm, hãy bấm “Chọn lại”.",
   },
 
   cacPhan: [
@@ -79,10 +79,12 @@ window.SURVEY = {
         { ma: "A1", loai: "chon1", tieuDe: "Bạn đang là sinh viên năm mấy?",
           luaChon: ["Năm 1", "Năm 2", "Năm 3", "Năm 4", "Đã tốt nghiệp (dưới 2 năm)"],
           chiTiepTucKhi: ["Năm 2"], batBuoc: true },
+        // Chỉ sinh viên ngành BĐS của UEH được làm tiếp
         { ma: "A2", loai: "chon1", tieuDe: "Bạn học ngành/chương trình nào?",
-          luaChon: ["Bất động sản – UEH", "Ngành khác – UEH (ghi rõ)", "Trường khác (ghi rõ)"] },
+          luaChon: ["Bất động sản – UEH", "Ngành khác ở UEH", "Trường khác"],
+          chiTiepTucKhi: ["Bất động sản – UEH"], batBuoc: true },
         { ma: "A3", loai: "chon1", tieuDe: "Chuyên ngành bạn đã chọn?",
-          luaChon: ["Phát triển BĐS", "Đầu tư tài chính BĐS", "Chưa chọn", "Không áp dụng"] },
+          luaChon: ["Phát triển BĐS", "Đầu tư tài chính BĐS", "Chưa chọn"] },
         { ma: "A4", loai: "chon1", tieuDe: "Bạn đến từ đâu?",
           luaChon: ["TP.HCM", "Tỉnh/thành khác"] },
         { ma: "A5", loai: "chon1", tieuDe: "Sau khi tốt nghiệp, bạn muốn làm việc ở đâu?",
@@ -147,10 +149,8 @@ window.SURVEY = {
         { ma: "C15", loai: "chonNhieu", toiDa: 3, tieuDe: "Bạn đã (hoặc đang) dựa vào điều gì để chọn chuyên ngành?",
           luaChon: ["Công việc mình muốn làm sau này", "Môn học hoặc điểm số", "Lời khuyên của giảng viên hoặc anh chị khóa trên",
             "Theo bạn bè", "Theo gia đình", "Chuyên ngành nào dễ xin việc hơn", "Chưa biết dựa vào đâu", "Khác (ghi rõ)"],
-          luaChonDuyNhat: ["Chưa biết dựa vào đâu"],
-          anKhi: { cau: "A3", la: ["Không áp dụng"] } },
-        { ma: "C14", loai: "thang5", tieuDe: "“Tôi biết mỗi chuyên ngành có thể dẫn tới những vị trí công việc nào.”",
-          anKhi: { cau: "A3", la: ["Không áp dụng"] } },
+          luaChonDuyNhat: ["Chưa biết dựa vào đâu"] },
+        { ma: "C14", loai: "thang5", tieuDe: "“Tôi biết mỗi chuyên ngành có thể dẫn tới những vị trí công việc nào.”" },
         { ma: "C13", loai: "thang5", tieuDe: "“Tôi có thể kể ra 2–3 kỹ năng hoặc kinh nghiệm cụ thể mà nhà tuyển dụng ngành BĐS cần ở người mới ra trường.”" },
         { ma: "C12", loai: "thang5", tieuDe: "“Tôi lo rằng dù chọn hướng nào, khi đi làm thật mình cũng có thể thấy không hợp.”" },
         // "Chưa từng" không đi chung với các lựa chọn khác: chọn nó sẽ bỏ các lựa chọn còn lại
@@ -201,17 +201,6 @@ window.SURVEY = {
           layLuaChonTu: "E1", boQuaKhiMotLuaChon: true, chiHienKhiDaTraLoi: "E1" },
         { ma: "E6", loai: "traLoiNgan", tieuDe: "Vì sao đó là khó khăn lớn nhất với bạn?",
           chiHienKhiDaTraLoi: "E1" },
-        { ma: "E2", loai: "chonNhieu", toiDa: 3, tieuDe: "Hình thức hỗ trợ nào bạn muốn có nhất?",
-          luaChon: [
-            "Bài mô tả công việc thật của từng vị trí, do người đang làm kể",
-            "Trò chuyện nhóm nhỏ với anh chị đi trước",
-            "Một anh/chị hướng dẫn 1–1 theo định kỳ",
-            "Bài tập mô phỏng công việc thật",
-            "Được xem và góp ý CV",
-            "Chia sẻ JD và câu hỏi phỏng vấn thật",
-            "Lộ trình gợi ý theo từng năm học",
-            "Khác (ghi rõ)",
-          ] },
         { ma: "E3", loai: "traLoiNgan", tieuDe: "Điều bạn ước được biết sớm hơn về ngành này là gì?" },
         // Email được gửi sang sheet riêng, không nằm chung dòng với câu trả lời
         { ma: "E4", loai: "email", tieuDe: "Nếu muốn nhận nội dung chia sẻ hoặc tham gia các buổi trò chuyện, hãy để lại email.",

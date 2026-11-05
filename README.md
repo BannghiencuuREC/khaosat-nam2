@@ -36,7 +36,7 @@ Mỗi câu hỏi trong `questions.js` trông như sau:
   - `chiHienKhiDaTraLoi: "E1"`: chỉ hiện câu này nếu người trả lời không bỏ qua E1.
   - Chữ trong `la: [...]` phải **giống hệt** chữ của lựa chọn. Nếu bạn sửa chữ của một lựa chọn, hãy sửa cả chỗ này.
 - **Danh sách vị trí** dùng chung cho B2 và C9 nằm ở đầu file, tên là `DS_VI_TRI`. Sửa ở đó là đổi cả hai câu.
-- **Chỉ dành cho sinh viên năm 2:** câu A1 có `chiTiepTucKhi: ["Năm 2"]` và `batBuoc: true`. Người chọn năm khác sẽ thấy lời cảm ơn (phần `loiDungSom` trong `questions.js`) và dừng lại, không có dòng nào được ghi vào Sheet. Muốn mở cho mọi năm, xóa hai trường này.
+- **Chỉ dành cho sinh viên năm 2 ngành BĐS UEH:** câu A1 có `chiTiepTucKhi: ["Năm 2"]`, câu A2 có `chiTiepTucKhi: ["Bất động sản – UEH"]`, cả hai đều có `batBuoc: true`. Người chọn năm khác hoặc ngành khác sẽ thấy lời cảm ơn (phần `loiDungSom` trong `questions.js`) và dừng lại, không có dòng nào được ghi vào Sheet. Muốn mở rộng, xóa hai trường này ở câu tương ứng và sửa lại `loiDungSom`.
 - **Lấy lựa chọn từ câu trước:** B5 có `layLuaChonTu: "B4"`, nên chỉ hiện các nguồn đã chọn ở B4. E5 cũng lấy từ E1 và có thêm `boQuaKhiMotLuaChon: true`: nếu E1 chỉ chọn 1 khó khăn, trang bỏ qua E5 và tự ghi khó khăn đó vào cột E5.
 - **Mỗi lựa chọn một ô:** C8 có `moiLuaChonMotO: "C9"`, nên với mỗi vị trí được chọn ở C9, trang hiện một ô gõ riêng. Nếu người trả lời bỏ qua C9, trang hiện một ô chung kèm câu hỏi `tieuDeKhiKhongChon`.
 
