@@ -42,11 +42,15 @@ const DS_VI_TRI = [
 ];
 
 window.SURVEY = {
-  tieuDe: "Hành trình định hướng nghề nghiệp ngành BĐS",
+  tieuDe: "Năm 2 ngành BĐS: Bạn sẽ làm gì với tương lai của chính mình?",
   thoiGian: "7–10 phút",
 
   loiMoDau: {
-    chao: "Chào bạn! Khảo sát này dành cho sinh viên năm 2 ngành Bất động sản UEH, tìm hiểu những khó khăn các bạn gặp khi định hướng nghề nghiệp trong ngành Bất động sản. Kết quả sẽ giúp REC hiểu rõ các bạn đang gặp khó khăn gì, để thiết kế những hoạt động hỗ trợ định hướng nghề phù hợp hơn.",
+    // Mỗi dòng trong danh sách là một đoạn văn trên trang đầu
+    chao: [
+      "Bước qua năm 1, câu hỏi “sau này mình sẽ làm gì?” bắt đầu đến gần hơn: bạn chọn chuyên ngành nào, theo nghề gì, bắt đầu từ đâu. Có bạn may mắn hơn khi đã thấy khá rõ hướng đi nhưng cũng có những bạn đang cân nhắc một vài hướng, cũng không thiếu những bạn vẫn còn mông lung. Thời điểm này, những chuyện đó vẫn rất đỗi bình thường.",
+      "Nhằm giúp các bạn có thêm nguồn thông tin tham khảo, trong phạm vi khả năng của REC, khảo sát này dành riêng cho sinh viên năm 2 ngành Bất động sản UEH. REC muốn nghe chính các bạn kể điều gì đang giúp và điều gì đang làm khó các bạn khi định hướng nghề. Câu trả lời của bạn sẽ giúp REC mời đúng những anh chị đi trước và có ý tưởng tổ chức những hoạt động thật sự có ích cho các bạn.",
+    ],
     gachDau: [
       "Thời gian: khoảng 7–10 phút.",
       "Khảo sát hoàn toàn ẩn danh. Email ở cuối là không bắt buộc.",
@@ -139,6 +143,8 @@ window.SURVEY = {
       giaiDoan: 2,
       cauHoi: [
         { ma: "C11", loai: "thang5", tieuDe: "“Tôi có thể kể ra 3 việc mình làm tốt và 1 kiểu công việc mình chắc chắn không muốn làm.”" },
+        // Đọc cùng C11: biết mình là ai (C11) nhưng chưa nối được với nghề (C18)
+        { ma: "C18", loai: "thang5", tieuDe: "“Tôi biết những điểm mạnh và sở thích của mình phù hợp với vị trí nào trong ngành BĐS.”" },
         { ma: "C1", loai: "chon1", tieuDe: "Bạn đã có hướng nghề muốn theo chưa?",
           luaChon: ["Đã rõ một hướng", "Đang cân nhắc vài hướng", "Chưa có hướng nào"] },
         { ma: "C2", loai: "traLoiNgan", tieuDe: "Nếu đã có hướng, đó là vị trí nào?",

@@ -361,7 +361,7 @@
       illustration("intro"),
       el("p", { class: "kicker" }, "Khảo sát ẩn danh · " + S.thoiGian),
       el("h1", { class: "title title-xl", tabindex: "-1", "data-focus": true }, S.tieuDe),
-      el("p", { class: "lead" }, L.chao),
+      [].concat(L.chao).map((t) => el("p", { class: "lead" }, t)),
       el("ul", { class: "bullets" }, L.gachDau.map((t) => el("li", null, t))),
       el("p", { class: "card note" }, L.thangDiem),
       resumable && el("button", {
